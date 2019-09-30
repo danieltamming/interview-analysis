@@ -2,21 +2,21 @@
 Scripts and function to scrape text from [ASAP Sports](http://www.asapsports.com/), a sports interview transcript site. 
 The resulting study can be found in a Medium post <!-- [this](<medium url>) Medium post. -->. 
 
-The functions that collect, clean, and access the data  are well commented and written with other users in mind. 
+The functions that collect, clean, and access the data  are well commented and written with other users in mind. These are shown in bold below. 
 
 Those whose sole interest is in the data itself need only to use data/interviews_clean.txt, although _utils.py_ provides useful helper functions. 
 
-_scraper.py_:
+___scraper.py___:
  - scrapes interview data from the hockey portion of the site
  
-_clean.py_:
+___clean.py___:
  - corrects inconsistencies in the website's data
+
+___utils.py___:
+ - helper functions for gathering the scraped data
 
 _plotting.py_:
  - creates figures that shed light on the nature of these interviews 
-
-_utils.py_:
- - helper functions for gathering the scraped data
 
 data/interviews_raw.txt:
  - the scraped data
