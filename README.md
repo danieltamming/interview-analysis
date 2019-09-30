@@ -1,5 +1,5 @@
 # InterviewAnalysis
-Scripts and function to scrape text from [ASAP Sports](http://www.asapsports.com/), a sports interview transcript site. Thus far it is focused entirely on practice day interviews between National Hockey League Stanley Cup Final games. The resulting study can be found in a Medium post <!-- [this](<medium url>) Medium post. -->. 
+Scripts and function to scrape text from [ASAP Sports](http://www.asapsports.com/), a sports interview transcript site. Thus far it is focused entirely on practice day interviews between National Hockey League Stanley Cup Final games. The resulting study can be found in a Medium post<!-- [this](<medium url>) Medium post. -->. 
 
 Those whose sole interest is in the data itself need only to use data/interviews_clean.txt, although _utils.py_ provides useful helper functions. 
 
