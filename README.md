@@ -24,7 +24,7 @@ data/interviews_raw.txt:
  - the scraped data
 
 data/interviews_clean.txt:
- - the scraped data, cleaned using clean.py
+ - the scraped data, cleaned using _clean.py_
 
 ### HTML Tag Formatting
 Both of the data files are organized with html tagging in the following format shown below. There are a number of group interviews, so there are <answer> tags containing <name> and <text> children tags for each time an individual speaks during an interview. 
