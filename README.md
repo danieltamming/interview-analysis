@@ -1,12 +1,10 @@
 # InterviewAnalysis
-Scripts and function to scrape text from [ASAP Sports](http://www.asapsports.com/), a sports interview transcript site. 
-The resulting study can be found in a Medium post <!-- [this](<medium url>) Medium post. -->. 
-
+Scripts and function to scrape text from [ASAP Sports](http://www.asapsports.com/), a sports interview transcript site. Thus far it is focused entirely on practice day interviews between National Hockey League Stanley Cup Final games. The resulting study can be found in a Medium post <!-- [this](<medium url>) Medium post. -->. 
+Those whose sole interest is in the data itself need only to use data/interviews_clean.txt, although _utils.py_ provides useful helper functions. 
 The functions (in bold below) that collect, clean, and access the data are well commented and written with other users in mind. 
 
-Those whose sole interest is in the data itself need only to use data/interviews_clean.txt, although _utils.py_ provides useful helper functions. 
 
-## Python Files
+### Python Files
 ___scraper.py___:
  - scrapes interview data from the hockey portion of the site
  
@@ -19,14 +17,35 @@ ___utils.py___:
 _plotting.py_:
  - creates figures that shed light on the nature of these interviews 
 
-## Data Files
+### Data Files
 data/interviews_raw.txt:
  - the scraped data
 
 data/interviews_clean.txt:
  - the scraped data, cleaned using clean.py
+
+### HTML Tag Formatting
+Both of the data files are organized with html tagging in the following format shown below. There are a number of group interviews, so there are <answer> tags containing <name> and <text> children tags for each time an individual speaks during an interview. 
  
-## Figures
+```html
+<entry>
+ <team1> </team1>
+ <team2> </team2>
+ <date> </date>
+ <answer>
+  <name> </name>
+  <text> </text>
+ </answer>
+ <answer>
+  <name> </name>
+  <text> </text>
+ </answer>
+ ...
+ ...
+</entry>
+```
+
+### Figures
 Several of the figures contained in this repo are shown below. They are explained in detail in the Medium post <!-- [Medium post](<medium url>) -->.
 
 ![alt text](figures/player_cloud.png)
