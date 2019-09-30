@@ -1,5 +1,4 @@
 # InterviewAnalysis
-
 Scripts and function to scrape text from [ASAP Sports](http://www.asapsports.com/), a sports interview transcript site. 
 The resulting study can be found in a Medium post <!-- [this](<medium url>) Medium post. -->. 
 
