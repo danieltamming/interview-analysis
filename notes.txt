@@ -1,0 +1,16 @@
+Find elsewhere, crossreference:
+- series score per day
+- remove nonplayers
+
+Analyze axes:
+- coaches vs players
+- hockey vs baseball
+- team sports vs individual sports
+
+Analyze:
+- Speech variance measure? (Who speaks more freely)
+- K means for speech?
+- Sentiment using github below
+
+- https://github.com/fnielsen/afinn
+- https://stats.stackexchange.com/questions/325549/how-to-measure-dispersion-in-word-frequency-data
