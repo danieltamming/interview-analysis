@@ -173,15 +173,16 @@ def save_data(all_interviews, target_file):
 		f.write('</entry>')
 	f.close()
 
-def main():
+if __name__ == "__main__":
 	args = parsing()
 	all_interviews = get_data(args.website)
-	save_data(all_interviews, args.targfile)
+	if input('Save Data?\n').lower() == 'y':
+		save_data(all_interviews, args.targfile)
+	else:
+		print('Not saving data.')
 
-# main()
-
-url = 'http://www.asapsports.com/show_interview.php?id=150921'
-page = requests.get(url)
-soup = BeautifulSoup(page.text, 'html.parser')
-main_text = soup.find(attrs={'style':'padding: 10px;', 'valign':'top'})
-print(main_text.prettify())
+# url = 'http://www.asapsports.com/show_interview.php?id=150921'
+# page = requests.get(url)
+# soup = BeautifulSoup(page.text, 'html.parser')
+# main_text = soup.find(attrs={'style':'padding: 10px;', 'valign':'top'})
+# print(main_text.prettify())
