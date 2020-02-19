@@ -13,11 +13,14 @@ from utils import *
 
 
 def players_vs_coaches():
-	coach_names = get_most_common_names(soup, 20, text_requirement=re.compile('coach'))
-	player_names = get_most_common_names(soup, 20, text_requirement=re.compile('^((?!coach).)*$'))
+	coach_names = get_most_common_names(
+		soup, 20, text_requirement=re.compile('coach'))
+	player_names = get_most_common_names(
+		soup, 20, text_requirement=re.compile('^((?!coach).)*$'))
 	coach_word_counts = get_word_counts(soup, coach_names)
 	player_word_counts = get_word_counts(soup, player_names)
-	min_word_count = min(list(coach_word_counts.values()) + list(player_word_counts.values()))
+	min_word_count = min(list(coach_word_counts.values()) 
+						 + list(player_word_counts.values()))
 	coach_words = get_all_words(soup, coach_names, limit=min_word_count)
 	player_words = get_all_words(soup, player_names, limit=min_word_count)
 	n = 1
@@ -65,7 +68,10 @@ def compare_years():
 	plt.show()
 
 def sentiment_boxplot(names, wins, coaches):
-	exclude_names = set(['pierre mcguire', 'jamey horan', 'gary bettman', 'bill daly', 'frank brown', 'david keon', 'brian maclellan', 'bruce cassidy', 'craig berube', 'terry murray'])
+	exclude_names = set(['pierre mcguire', 'jamey horan', 'gary bettman', 
+						 'bill daly', 'frank brown', 'david keon', 
+						 'brian maclellan', 'bruce cassidy', 'craig berube', 
+						 'terry murray'])
 
 	afinn = Afinn()
 
@@ -86,19 +92,28 @@ def sentiment_boxplot(names, wins, coaches):
 
 	for win_count, color in zip(win_set, colors):
 		selected_names = [tup[0] for tup in wins if tup[1] == win_count]
-		data = [result[1] for result in results if result[0] in selected_names]
-		label_names = [name.split(' ',1)[1] for name in selected_names] if coaches else selected_names
-		subplt = ax.boxplot(data, positions=position_list[:len(selected_names)], 
+		data = [result[1] for result in results 
+				if result[0] in selected_names]
+		if coaches:
+			label_names = [name.split(' ',1)[1] for name in selected_names]
+		else:
+			label_names = selected_names
+		subplt = ax.boxplot(
+			data, positions=position_list[:len(selected_names)], 
 			vert=0, labels=label_names, patch_artist=True, widths=0.25)
 		subplts.append(subplt)
 		del position_list[:len(selected_names)]
 		for patch in subplt['boxes']: patch.set_facecolor(color)
 	pos = ax.get_position()
-	# ax.set_position([pos.x0, pos.y0+0.1*pos.height, pos.width, 0.9*pos.height])
-	ax.legend(reversed([subplt['boxes'][0] for subplt in subplts]), reversed(win_set),
-				title='Legend: # of Stanley Cup Wins', loc='lower left', bbox_to_anchor=(0,1.02,1,0.2),
-				fancybox=False, ncol=len(win_set), mode='expand', borderaxespad=0)
-	title_text = 'Sentiment of 10 Most Interviewed Coaches' if coaches else 'Sentiment of 10 Most Interviewed Players'
+	ax.legend(
+		reversed([subplt['boxes'][0] for subplt in subplts]), 
+		reversed(win_set), title='Legend: # of Stanley Cup Wins', 
+		loc='lower left', bbox_to_anchor=(0,1.02,1,0.2),
+		fancybox=False, ncol=len(win_set), mode='expand', borderaxespad=0)
+	if coaches:
+		title_text = 'Sentiment of 10 Most Interviewed Coaches'
+	else:
+		title_text = 'Sentiment of 10 Most Interviewed Players'
 	# plt.title(title_text, y=1.2, fontweight='bold')
 	plt.ylabel('Name', fontweight='bold')
 	plt.xlabel('Sentiment Score', fontweight='bold')
@@ -109,7 +124,10 @@ def sentiment_boxplot(names, wins, coaches):
 	plt.show()
 
 def sentiment_histogram(player_names, coach_names):
-	exclude_names = set(['pierre mcguire', 'jamey horan', 'gary bettman', 'bill daly', 'frank brown', 'david keon', 'brian maclellan', 'bruce cassidy', 'craig berube', 'terry murray'])
+	exclude_names = set(
+		['pierre mcguire', 'jamey horan', 'gary bettman', 'bill daly', 
+		'frank brown', 'david keon', 'brian maclellan', 'bruce cassidy', 
+		'craig berube', 'terry murray'])
 	afinn = Afinn()
 
 	fig, ax = plt.subplots()
@@ -131,18 +149,22 @@ def sentiment_histogram(player_names, coach_names):
 
 		sentiments = []
 		for i, name in enumerate(tqdm(names)):
-			interviews = get_interviews_from(soup, name, all_together=False, limit=8)
+			interviews = get_interviews_from(
+				soup, name, all_together=False, limit=8)
 			his_sentiments = len(interviews)*[0]
-			for j, interview in enumerate(interviews):
-				his_sentiments[j] = afinn.score(' '.join(interview))/len(interview)
+			for j, talk in enumerate(interviews):
+				his_sentiments[j] = afinn.score(' '.join(talk))/len(talk)
 			sentiments.extend(his_sentiments)
 
 		sent = np.array(sentiments)
-		n, bins, patches = ax.hist(sent, alpha=0.25, range=(-0.05,0.25), bins=30, color=hist_color, label=histlabel)
+		n, bins, patches = ax.hist(
+			sent, alpha=0.25, range=(-0.05,0.25), 
+			bins=30, color=hist_color, label=histlabel)
 		mu, sigma = sent.mean(), sent.std()
 		y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
      			np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
-		plotlabel += ' (' + r' $\mu$ = ' + str(round(mu,3)) + r', $\sigma$ = ' + str(round(sigma,3)) + ')'
+		plotlabel += (' (' + r' $\mu$ = ' + str(round(mu,3)) 
+					  + r', $\sigma$ = ' + str(round(sigma,3)) + ')')
 		ax.plot(bins, y, plot_form, label=plotlabel)
 	handles, labels = ax.get_legend_handles_labels()
 	plt.legend(reversed(handles), reversed(labels), loc='upper right')
@@ -155,8 +177,8 @@ def selfish_boxplot(names, lexicon, wins, coaches):
 	for i, name in enumerate(tqdm(names)):
 		interviews = get_interviews_from(soup, name, all_together=False)
 		sentiments = len(interviews)*[0]
-		for j, interview in enumerate(interviews):
-			sentiments[j] = sum([lexicon[word] for word in interview])/len(interview)
+		for j, talk in enumerate(interviews):
+			sentiments[j] = sum([lexicon[word] for word in talk])/len(talk)
 		results[i] = (names[i], sorted(sentiments))
 
 	colors = ['cyan', 'lightblue', 'lightgreen', 'tan', 'beige']
@@ -167,18 +189,24 @@ def selfish_boxplot(names, lexicon, wins, coaches):
 
 	for win_count, color in zip(win_set, colors):
 		selected_names = [tup[0] for tup in wins if tup[1] == win_count]
-		data = [result[1] for result in results if result[0] in selected_names]
-		label_names = [name.split(' ',1)[1] for name in selected_names] if coaches else selected_names
-		subplt = ax.boxplot(data, positions=position_list[:len(selected_names)], 
+		data = [result[1] for result in results 
+				if result[0] in selected_names]
+		if coaches:
+			label_names = [name.split(' ',1)[1] for name in selected_names]
+		else:
+			label_names = selected_names
+		subplt = ax.boxplot(
+			data, positions=position_list[:len(selected_names)], 
 			vert=0, labels=label_names, patch_artist=True, widths=0.25)
 		subplts.append(subplt)
 		del position_list[:len(selected_names)]
 		for patch in subplt['boxes']: patch.set_facecolor(color)
 	pos = ax.get_position()
-	# ax.set_position([pos.x0, pos.y0+0.1*pos.height, pos.width, 0.9*pos.height])
-	ax.legend(reversed([subplt['boxes'][0] for subplt in subplts]), reversed(win_set),
-				title='Legend: # of Stanley Cup Wins', loc='lower left', bbox_to_anchor=(0,1.02,1,0.2),
-				fancybox=False, ncol=len(win_set), mode='expand', borderaxespad=0)
+	ax.legend(
+		reversed([subplt['boxes'][0] for subplt in subplts]), 
+		reversed(win_set), title='Legend: # of Stanley Cup Wins', 
+		loc='lower left', bbox_to_anchor=(0,1.02,1,0.2),fancybox=False, 
+		ncol=len(win_set), mode='expand', borderaxespad=0)
 	title_text = 'Selfishness of 10 Most Interviewed ' 
 	title_text += 'Coaches' if coaches else 'Players'
 	# plt.title(title_text, y=1.2, fontweight='bold')
@@ -190,7 +218,10 @@ def selfish_boxplot(names, lexicon, wins, coaches):
 	plt.show()
 
 def selfishness_histogram(player_names, coach_names, lexicon):
-	exclude_names = set(['pierre mcguire', 'jamey horan', 'gary bettman', 'bill daly', 'frank brown', 'david keon', 'brian maclellan', 'bruce cassidy', 'craig berube', 'terry murray'])
+	exclude_names = set(
+		['pierre mcguire', 'jamey horan', 'gary bettman', 'bill daly', 
+		'frank brown', 'david keon', 'brian maclellan', 'bruce cassidy', 
+		'craig berube', 'terry murray'])
 
 	fig, ax = plt.subplots()
 	plt.ylabel('# of Interviews')
@@ -211,18 +242,23 @@ def selfishness_histogram(player_names, coach_names, lexicon):
 
 		selfishness = []
 		for i, name in enumerate(tqdm(names)):
-			interviews = get_interviews_from(soup, name, all_together=False, limit=8)
+			interviews = get_interviews_from(
+				soup, name, all_together=False, limit=8)
 			his_selfishness = len(interviews)*[0]
-			for j, interview in enumerate(interviews):
-				his_selfishness[j] = sum([lexicon[word] for word in interview])/len(interview)
+			for j, talk in enumerate(interviews):
+				his_selfishness[j] = sum(
+					[lexicon[word] for word in talk])/len(talk)
 			selfishness.extend(his_selfishness)
 
 		sent = np.array(selfishness)
-		n, bins, patches = ax.hist(sent, alpha=0.5, range=(-0.15,0.12), bins=30, color=hist_color, label=histlabel)
+		n, bins, patches = ax.hist(
+			sent, alpha=0.5, range=(-0.15,0.12), 
+			bins=30, color=hist_color, label=histlabel)
 		mu, sigma = sent.mean(), sent.std()
 		y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
      			np.exp(-0.5 * (1 / sigma * (bins - mu))**2))
-		plotlabel += ' (' + r' $\mu$ = ' + str(round(mu,3)) + r', $\sigma$ = ' + str(round(sigma,3)) + ')'
+		plotlabel += (' (' + r' $\mu$ = ' + str(round(mu,3)) + 
+					  r', $\sigma$ = ' + str(round(sigma,3)) + ')')
 		ax.plot(bins, y, plot_form, label=plotlabel)
 	handles, labels = ax.get_legend_handles_labels()
 	plt.legend(reversed(handles), reversed(labels), loc='upper right')
@@ -255,7 +291,8 @@ def scatter_selfishness_sentiment(coach_names, player_names, lexicon):
 
 	ax.scatter(selfishness, sentiments)
 	for name,x,y in zip(names, selfishness, sentiments):
-		ax.annotate(name, (x,y), xytext=(0,10), textcoords='offset points', ha='center')
+		ax.annotate(name, (x,y), xytext=(0,10), 
+					textcoords='offset points', ha='center')
 	# handles, labels = ax.get_legend_handles_labels()
 	# plt.legend(reversed(handles), reversed(labels), loc='upper right')
 	# plt.tight_layout()
@@ -267,8 +304,10 @@ def log_odds_word_cloud(coach_names, player_names, n=1, num_words=30):
 	for i, names in enumerate([player_names, coach_names]):
 		words = []
 		for name in tqdm(names):
-			interviews = get_interviews_from(soup, name, all_together=False, limit=8)
-			words.extend([word for interview in interviews for word in interview])
+			interviews = get_interviews_from(
+				soup, name, all_together=False, limit=8)
+			words.extend([word for interview in interviews 
+						 for word in interview])
 		ngs = nltk.ngrams(words, n)
 		fdists[i] = nltk.FreqDist(ngs)
 
@@ -279,7 +318,10 @@ def log_odds_word_cloud(coach_names, player_names, n=1, num_words=30):
 
 	for i in range(2):
 		# first is coaches second is players
-		log_odds = log_odds_list[:num_words] if i == 0 else log_odds_list[-num_words:]
+		if i == 0:
+			log_odds = log_odds_list[:num_words]
+		else:
+			log_odds = log_odds_list[-num_words:]
 		weights = {word: freq for (word,), freq in log_odds}
 		my_wordcloud = WordCloud().generate_from_frequencies(weights)
 		plt.imshow(my_wordcloud, interpolation='bilinear')
@@ -290,61 +332,53 @@ def word_cloud(names, mask_file, save_file, n=1, num_words=40):
 	cloud_mask = np.load(mask_file)
 	words = []
 	for name in tqdm(names):
-		interviews = get_interviews_from(soup, name, all_together=False, limit=8)
+		interviews = get_interviews_from(
+			soup, name, all_together=False, limit=8)
 		words.extend([word for interview in interviews for word in interview])
 	word_count = get_common_no_stop(words)
-	my_wordcloud = WordCloud(max_words=num_words, mask=cloud_mask, contour_width=3, contour_color='black', background_color='white').generate_from_frequencies(word_count)
+	my_wordcloud = WordCloud(
+		max_words=num_words, mask=cloud_mask, 
+		contour_width=3, contour_color='black', 
+		background_color='white').generate_from_frequencies(word_count)
 	plt.imshow(my_wordcloud, interpolation='bilinear')
 	plt.axis('off')
 	plt.show()
 	my_wordcloud.to_file('figures/'+save_file)
 
 file = 'data/interviews_clean.txt'
-with open(file) as f: soup = BeautifulSoup(f, 'html.parser')
-exclude_names = set(['pierre mcguire', 'jamey horan', 'gary bettman', 'bill daly', 'frank brown', 'david keon', 'brian maclellan', 'bruce cassidy', 'craig berube', 'terry murray'])
+with open(file) as f: 
+	soup = BeautifulSoup(f, 'html.parser')
+exclude_names = set(
+	['pierre mcguire', 'jamey horan', 'gary bettman', 'bill daly', 
+	'frank brown', 'david keon', 'brian maclellan', 'bruce cassidy', 
+	'craig berube', 'terry murray'])
 
-# coach_names = get_most_common_names(soup, 10, text_requirement=re.compile('coach'))
-# player_names = get_most_common_names(soup, 10, text_requirement=re.compile('^((?!coach).)*$'))
+coach_wins = [('coach peter laviolette',1),('coach mike babcock',1),
+			  ('coach larry robinson',1),('coach ken hitchcock',1),
+			  ('coach mike sullivan',2),('coach scotty bowman',9),
+			  ('coach darryl sutter',2),('coach pat burns',1),
+			  ('coach claude julien',1),('coach joel quenneville',3)]
+player_wins = [('scott stevens',3),('chris pronger',1),('martin brodeur',3),
+			   ('sidney crosby',3),('paul kariya',0),('steve yzerman',3),
+			   ('brett hull',2), ('j s  giguere',1), ('scott niedermayer',4), 
+			   ('nicklas lidstrom',4)]
 
-# coach_wins = {'coach peter laviolette': 1, 'coach mike babcock': 1, 'coach larry robinson': 1, 'coach ken hitchcock': 1, 'coach mike sullivan': 2, 'coach scotty bowman': 9, 'coach darryl sutter': 2, 'coach pat burns': 1, 'coach claude julien': 1, 'coach joel quenneville': 3}
-coach_wins = [('coach peter laviolette',1),('coach mike babcock',1),('coach larry robinson',1),('coach ken hitchcock',1),('coach mike sullivan',2),('coach scotty bowman',9),('coach darryl sutter',2),('coach pat burns',1),('coach claude julien',1),('coach joel quenneville',3)]
-player_wins = [('scott stevens',3),('chris pronger',1),('martin brodeur',3),('sidney crosby',3),('paul kariya',0),('steve yzerman',3),('brett hull',2), ('j s  giguere',1), ('scott niedermayer',4), ('nicklas lidstrom',4)]
-
-# sentiment_boxplot(coach_names, coach_wins, True)
-# sentiment_boxplot(player_names, player_wins, False)
-
-# coach_names = get_most_common_names(soup, 20, text_requirement=re.compile('coach'))
-# player_names = get_most_common_names(soup, 20, text_requirement=re.compile('^((?!coach).)*$'))
-
-# sentiment_histogram(player_names, coach_names)
-
-# for name in coach_names + player_names:
-# 	print(name)
-# 	print(len(get_interviews_from(soup, name, all_together=False)))
-# 	print()
-
-# player_names = get_most_common_names(soup, 30, text_requirement=re.compile('^((?!coach).)*$'))
-# words = get_all_words(soup, player_names)
-# word_count = Counter(words)
-
-# for word in word_count.most_common(500):
-# 	print(word)
-
-# coach_names = get_most_common_names(soup, 20, text_requirement=re.compile('coach'))
-# player_names = get_most_common_names(soup, 20, text_requirement=re.compile('^((?!coach).)*$'))
+coach_names = get_most_common_names(
+	soup, 20, text_requirement=re.compile('coach'))
+player_names = get_most_common_names(
+	soup, 20, text_requirement=re.compile('^((?!coach).)*$'))
 
 # use Counter object soout of dictionary words will be mapped to 0
-# selfish_lexicon = Counter({'i':1,'my':1,'i\'m':1,'i\'ve':1,'i\'ll':1,'myself':1,'we':-1,
-# 				'our':-1,'us':-1,'we\'re':-1,'we\'ve':-1,'we\'ll':-1,'ourselves':-1})
+selfish_lexicon = Counter(
+	{'i':1,'my':1,'i\'m':1,'i\'ve':1,'i\'ll':1,'myself':1,'we':-1,
+	 'our':-1,'us':-1,'we\'re':-1,'we\'ve':-1,'we\'ll':-1,'ourselves':-1})
 
-# # selfish_boxplot(coach_names, selfish_lexicon, coach_wins, True)
-# # selfish_boxplot(player_names, selfish_lexicon, player_wins, False)
-# # selfishness_histogram(player_names, coach_names, selfish_lexicon)
-
-coach_names = get_most_common_names(soup, 20, text_requirement=re.compile('coach'))
-player_names = get_most_common_names(soup, 20, text_requirement=re.compile('^((?!coach).)*$'))
-# scatter_selfishness_sentiment(coach_names, player_names, selfish_lexicon)
-# log_odds_word_cloud(coach_names, player_names)
-
-# word_cloud(coach_names, 'data/coach_mask.npy', 'coach_cloud.png')
-# word_cloud(player_names, 'data/player_mask.npy', 'player_cloud.png')
+sentiment_boxplot(coach_names, coach_wins, True)
+sentiment_boxplot(player_names, player_wins, False)
+sentiment_histogram(player_names, coach_names)
+selfish_boxplot(coach_names, selfish_lexicon, coach_wins, True)
+selfish_boxplot(player_names, selfish_lexicon, player_wins, False)
+selfishness_histogram(player_names, coach_names, selfish_lexicon)
+scatter_selfishness_sentiment(coach_names, player_names, selfish_lexicon)
+word_cloud(coach_names, 'data/coach_mask.npy', 'coach_cloud.png')
+word_cloud(player_names, 'data/player_mask.npy', 'player_cloud.png')

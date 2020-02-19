@@ -5,6 +5,8 @@ import argparse
 from tqdm import tqdm
 from bs4 import BeautifulSoup, Comment
 
+COUNT = 0
+
 def parsing():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-tgt', '--targfile', default='scraperesults.txt', 
@@ -24,7 +26,7 @@ def is_answer_start(s):
 def join_answers(answers):
 	'''
 	Parameter: list of answer string
-	Returns: list of answer, with unnamed answers appended to the previous answer
+	Returns: list of answer, unnamed answers appended to the previous answer
 	Ensures each answer is begins with the name of the speaker
 	'''
 	if len(answers) == 0: return []
@@ -44,7 +46,8 @@ def clean_string(s):
 	Parameter: string
 	Returns: string lowercase, punctuation replaced with spaces
 	'''
-	to_remove = string.digits + ''.join([punc for punc in string.punctuation if punc != '\''])
+	to_remove = string.digits + ''.join([punc for punc in string.punctuation 
+										 if punc != '\''])
 	trans = str.maketrans(to_remove, len(to_remove)*' ')
 	s = s.translate(trans).strip('\r\n\t ').lower()
 	s = re.sub(' +', ' ', s)
@@ -52,9 +55,11 @@ def clean_string(s):
 
 def get_answers(soup, main_text):
 	tags = main_text.find_all(text=True, recursive=False) + soup.find_all('p')
-	tags = [tag for tag in tags if tag.string and not isinstance(tag, Comment)]
+	tags = [tag for tag in tags if tag.string 
+			and not isinstance(tag, Comment)]
 	strings = [str(tag.string).strip('\r\n\t ') for tag in tags]
-	answers = [s for s in strings if len(s) > 3 and s[:2] != 'Q.' and 'MODERATOR' not in s and 'FastScripts' not in s]
+	answers = [s for s in strings if len(s) > 3 and s[:2] != 'Q.' 
+			   and 'MODERATOR' not in s and 'FastScripts' not in s]
 	return answers
 
 def parse_interview(url):
@@ -77,6 +82,10 @@ def parse_interview(url):
 		person = clean_string(person)
 		statement = clean_string(statement).split()
 		named_answers.append((person, statement))
+
+	global COUNT
+	COUNT += 1
+
 	return date, named_answers
 
 def parse_name_page(url):
@@ -86,7 +95,8 @@ def parse_name_page(url):
 	'''
 	page = requests.get(url)
 	soup = BeautifulSoup(page.text, 'html.parser')
-	table = soup.find('table', attrs={'width':'100%', 'cellspacing':'0', 'cellpadding':'3', 'border':'0'})
+	table = soup.find('table', attrs={'width':'100%', 'cellspacing':'0', 
+									  'cellpadding':'3', 'border':'0'})
 	links = table.find_all('a', href=True)
 	interviews = [parse_interview(link['href']) for link in links]
 	return interviews
@@ -98,7 +108,8 @@ def parse_events_page(url):
 	'''
 	page = requests.get(url)
 	soup = BeautifulSoup(page.text, 'html.parser')
-	table = soup.find('table', attrs={'width':'100%', 'cellspacing':'0', 'cellpadding':'3', 'border':'0'})
+	table = soup.find('table', attrs={'width':'100%', 'cellspacing':'0', 
+									  'cellpadding':'3', 'border':'0'})
 	links = table.find_all('a', href=True)
 	interviews_yearly = []
 	for link in links:
@@ -130,7 +141,8 @@ def parse_sport_page(url):
 	'''
 	page = requests.get(url)
 	soup = BeautifulSoup(page.text, 'html.parser')
-	table = soup.find_all('table', attrs={'width':'100%', 'cellspacing':'0', 'cellpadding':'5', 'border':'0'})[1]
+	table = soup.find_all('table', attrs={'width':'100%', 'cellspacing':'0', 
+										  'cellpadding':'5', 'border':'0'})[1]
 	links = table.find_all('a', href=True)
 	urls = {}
 	for link in links:
@@ -180,9 +192,4 @@ if __name__ == "__main__":
 		save_data(all_interviews, args.targfile)
 	else:
 		print('Not saving data.')
-
-# url = 'http://www.asapsports.com/show_interview.php?id=150921'
-# page = requests.get(url)
-# soup = BeautifulSoup(page.text, 'html.parser')
-# main_text = soup.find(attrs={'style':'padding: 10px;', 'valign':'top'})
-# print(main_text.prettify())
+	print(COUNT)

@@ -9,7 +9,10 @@ from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
 from PIL import Image
 
-exclude_names = set(['pierre mcguire', 'jamey horan', 'gary bettman', 'bill daly', 'frank brown', 'david keon', 'brian maclellan', 'bruce cassidy', 'craig berube', 'terry murray'])
+exclude_names = set(['pierre mcguire', 'jamey horan', 'gary bettman', 
+					 'bill daly', 'frank brown', 'david keon', 
+					 'brian maclellan', 'bruce cassidy', 'craig berube', 
+					 'terry murray'])
 
 def check_duplicates(L):
 	count = 0
@@ -38,7 +41,8 @@ def get_log_odds(dist1, dist2):
 	grams = set(dist1.keys()).intersection(set(dist2.keys()))
 	log_odds_list = len(grams)*[None]
 	for i, key in enumerate(grams):
-		ratio = math.log((float(dist1[key]+1)/(total1+1))/(float(dist2[key]+1)/(total2+1)))
+		ratio = math.log(
+			(float(dist1[key]+1)/(total1+1))/(float(dist2[key]+1)/(total2+1)))
 		ratio = round(ratio, 5)
 		log_odds_list[i] = (key, ratio)
 	log_odds_list = sorted(log_odds_list, key = lambda x: x[1])
@@ -46,7 +50,7 @@ def get_log_odds(dist1, dist2):
 
 def get_shannon_entropy(dist):
 	'''
-	Parameters: nltk frequency distribution (list of words and their frequency)
+	Parameters: nltk freq distribution (list of words and their frequency)
 	Returns: 	scaled Shannon entropy of the distribution
 	'''
 	entropy = 0
@@ -60,12 +64,12 @@ def get_shannon_entropy(dist):
 def get_interviews_from(soup, name, all_together=True, limit=None):
 	'''
 	Parameters: person's name
-	Returns: List of lists of words, the sublists are for each date interviewed
+	Returns: List of lists of words, sublists are for each date interviewed
 	Note: Some entries have multiple answer tags for a signle person,
 			so we merge the text from these tags
 	'''
-	name_tags = soup.find_all('name', text=name) # all name tags with name
-	entry_tags = set([tag.parent.parent for tag in name_tags]) # all entry tags containing interviews with name
+	name_tags = soup.find_all('name', text=name)
+	entry_tags = set([tag.parent.parent for tag in name_tags])
 	interviews = []
 	for entry_tag in entry_tags:
 		interview = []
@@ -90,12 +94,6 @@ def get_word_counts(soup, names):
 
 def get_most_common_names(soup, num_people, text_requirement=None):
 	name_tags = soup.find_all('name', text=text_requirement)
-	# names = set([tag.string for tag in name_tags if tag.string not in exclude_names])
-	# interview_count = Counter()
-	# for name in tqdm(names):
-	# 	this_name_tags = soup.find_all('name', text_requirement=name)
-	# 	interview_count[name] = len(set([tag.parent.parent for tag in this_name_tags]))
-	# names = [item[0] for item in interview_count.most_common(num_people)]
 	names = [tag.text for tag in name_tags if tag.text not in exclude_names]
 	answer_count = Counter(names)
 	names = [item[0] for item in answer_count.most_common(num_people)]
@@ -105,7 +103,6 @@ def get_all_words(soup, names, limit=None):
 	all_words = []
 	for name in tqdm(names):
 		interviews = get_interviews_from(soup, name, limit=limit)
-		# interview_words = [word for interview in interviews for word in interview]
 		all_words.extend(interviews)
 	return all_words
 
@@ -114,8 +111,8 @@ def get_words_by_year(soup, year, limit=None):
 	entry_tags = [tag.parent for tag in date_tags]
 	name_tags = []
 	for entry_tag in entry_tags:
-		name_tags.extend([tag for tag in entry_tag.find_all('name',) if tag.text not in exclude_names])
-	# print(set([tag.text for tag in name_tags]))
+		name_tags.extend([tag for tag in entry_tag.find_all('name',) 
+						  if tag.text not in exclude_names])
 	text_tags = [tag.next_sibling for tag in name_tags]
 	words = []
 	for tag in text_tags:
