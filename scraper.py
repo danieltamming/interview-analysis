@@ -175,7 +175,7 @@ def save_data(all_interviews, target_file):
 	for (team1, team2), date, named_answers in all_interviews:
 		f.write('<entry>')
 		f.write('<team1>'+team1+'</team1>')
-		f.write('<team2>'+team1+'</team2>')
+		f.write('<team2>'+team2+'</team2>')
 		f.write('<date>'+date+'</date>')
 		for person, text in named_answers:
 			f.write('<answer>')

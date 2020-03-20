@@ -6,9 +6,9 @@ from collections import Counter
 
 def parsing():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-tgt', '--targfile', default='cleaned_data.txt', 
+	parser.add_argument('-t', '--targfile', default='cleaned_data.txt', 
 						type=str, help='File to write cleaned data to?')
-	parser.add_argument('-raw', '--rawfile', default='raw_data.txt',
+	parser.add_argument('-r', '--rawfile', default='raw_data.txt',
 						type=str, help='Raw data file?')
 	return parser.parse_args()
 
