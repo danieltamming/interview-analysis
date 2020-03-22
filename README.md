@@ -1,12 +1,13 @@
 # InterviewAnalysis
-Scripts and functions to scrape and analyze text from [ASAP Sports](http://www.asapsports.com/), a sports interview transcript site. Thus far the code is focused entirely on practice day interviews between National Hockey League Stanley Cup Final games. The resulting study can be found in [this](https://medium.com/analytics-vidhya/a-quantitative-study-of-nhl-interviews-25b28821364b) Analytics Vidhya __Medium post__. I've also published the [dataset on Kaggle](https://www.kaggle.com/dtamming/national-hockey-league-interviews).
-
-Those whose sole interest is in the data itself need only to use data/interviews_clean.txt, although _utils.py_ provides useful helper functions. 
+Scripts and functions to scrape and analyze text from [ASAP Sports](http://www.asapsports.com/), a sports interview transcript site. Thus far the code is focused entirely on practice day interviews between National Hockey League Stanley Cup Final games. The resulting study can be found in [this](https://medium.com/analytics-vidhya/a-quantitative-study-of-nhl-interviews-25b28821364b) Analytics Vidhya __Medium post__. I've also published the dataset on [Kaggle](https://www.kaggle.com/dtamming/national-hockey-league-interviews).
 
 The functions (in bold below) that collect, clean, and access the data are well commented and written with other users in mind. 
 
 
 ### Python Files
+___create\_csv.py___:
+ - converts the html-tagged data into a Pandas dataframe, which is then saved as a csv
+
 ___scraper.py___:
  - scrapes interview data from the hockey portion of the site
  
@@ -17,7 +18,7 @@ ___utils.py___:
  - helper functions for gathering the scraped data
 
 _plotting.py_:
- - creates figures that shed light on the nature of these interviews 
+ - creates figures that study these interviews 
 
 ### Data Files
 data/interviews_raw.txt:
