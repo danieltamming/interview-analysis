@@ -8,9 +8,11 @@ kiwisolver==1.1.0
 matplotlib==3.1.1
 nltk==3.4.5
 numpy==1.17.3
+pandas==1.0.3
 Pillow==6.2.1
 pyparsing==2.4.4
 python-dateutil==2.8.1
+pytz==2019.3
 requests==2.22.0
 six==1.13.0
 soupsieve==1.9.5
